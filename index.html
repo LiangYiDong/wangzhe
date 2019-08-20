@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -122,6 +123,7 @@
         arr.push(_pick)
       }
       var res = arr.join('');
+      _word.push(unescape(escape(res).replace(/(%u2060)|(%u2061)|(%u2062)|(%u2063)/g,"*")));
       console.log(res,"res");
       return res;
     };
