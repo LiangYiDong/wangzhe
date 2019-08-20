@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>王者荣耀改名</title>
+  <style>
+  *{margin:0;padding:0;}
+  html,body{width:100%;height:100%;position:relative;}
+  .ipt-wrap{width:510px;overflow:hidden;margin:0 auto; padding-top: 60px;}
+  .ipt{width:400px;height:48px;text-align:center;font-size:18px;outline:none;float:left;border:1px solid #38f;}
+  .btn{font-size:18px;height:50px;width:100px;text-align:center;background-color:#38f;color:#FFF;outline:none;border:1px solid #38f;float:left;}
+  .tips{color:#38f;text-align:center;margin:0 auto;padding-top:150px;font-size:18px;}
+  .res-list-wrap{
+    width: 620px;
+    margin: 0 auto;
+    padding-top: 50px;
+    display: none;
+  }
+  .res-list{
+    list-style: none;
+    overflow: hidden;
+  }
+  .res-item{
+    float: left;
+    width: 150px;
+    height: 40px;
+    line-height: 40px;
+    color: #38f;
+    border: 1px solid #f1f1f1;
+  }
+  .res-ipt{
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: 16px;
+    border: none;
+  }
+  .res-tips{
+    color:#333;
+    padding: 20px 0;
+  }
+  em{
+    color: #F00;
+  }
+  .fenge{
+    height:20px;
+    padding:10px 0;
+    width:100%;
+    text-align: center;
+  }
+  </style>
+</head>
+<body>
+  <p class="tips">温馨提示: 请不要超过游戏里面规定最大字符长度(6个中文字或者是12个英文字符)</p>
+  <div class="ipt-wrap">
+    <input type="text" class="ipt" placeholder="输入您想改的名字: 如 王思聪" id="Jipt" >
+    <button class="btn" id="Jbtn">确定</button>
+  </div>
+  <div class="res-list-wrap" id="Jres">
+    <p class="res-tips"> 以下是经过特殊处理的名字,每一个都<em>不一样</em> : 选中复制即可</p>
+    <ol class="res-list" id="Jol"></ol>
+    <div class="fenge">-------对照插入的位置-------</div>
+    <ol class="res-list" id="Yol"></ol>
+  </div>
+  <script>
+    // 工具函数
+    var _word = [];
+    function transfer(str) {
+        str = str.replace(/\\/g, "%");
+        return unescape(str);
+    }
+
+    function clone(obj){
+      var tmp ;
+      tmp = [];
+      var len = obj.length;
+      for (var i = 0; i < len; i++) {
+        tmp[i]=obj[i];
+      }
+      return tmp;
+    }
+
+    function rdIndex(length){
+      return Math.floor(Math.random()*(length))
+    }
+
+    function gen(v){
+      var pre = v.split('#');  //原始值
+      // console.log(pre,"pre");
+      var demand = 0;
+      if (pre.length>1) {
+        var o = pre[0].split('')
+        //typeof NaN === 'number'
+        !!+pre[1] ? (demand = pre[1]) :(demand = 3);
+      }else{
+        var o = v.split('');
+        demand = 3;
+      }
+      // 按需求插入个数
+      for (var i = 0; i <demand; i++) {
+        var index = rdIndex(o.length+1);
+        // 随机取一个字符插入, PS, 一旦选出, _clone会被修改, 必须还原
+        var _clone = clone(spStr);
+        var _pick  = _clone.splice(rdIndex(_clone.length),1).toString();
+        // console.log(escape(_pick),"_pick");
+        o.splice(index,0,_pick); // o都原始值会被修改
+        var res  = transfer(o.join(''));  
+      }
+      _word.push(unescape(escape(res).replace(/(%u2060)|(%u2061)|(%u2062)|(%u2063)/g,"*")));
+      console.log('最终值:',escape(res));
+      // console.log(_word);
+      return res;
+    }
+
+    function genEmpty(){
+      // 全空白
+      var arr = [];
+      for (var i = 0; i <6; i++) {
+        var _clone = clone(spStr);
+        var _pick  = _clone.splice(rdIndex(_clone.length),1).toString();
+        arr.push(_pick)
+      }
+      var res = arr.join('');
+      console.log(res,"res");
+      return res;
+    };
+
+    // var spStr = ['\u200a','\u2060','\u2061','\u2062','\u2063'];
+    var spStr = ['\u2060','\u2061','\u2062','\u2063'];
+    // var spStr = ['a','b','c','d','e'];
+
+    Jbtn.addEventListener('click',function(){
+      var v = Jipt.value.trim();
+      if(!!v){
+        var _html = '', _whtml = '';
+        for (var i = 0; i < 12; i++) {
+          _html+='<li class="res-item"><input class="res-ipt" type="text" value="'+ (v.indexOf('$')>-1 ? genEmpty(): gen(v))+'"></li>';
+        };
+        for (var i = 0; i < 12; i++) {
+          _whtml+='<li class="res-item"><input class="res-ipt" type="text" value="'+ _word[i] +'"></li>';
+        }
+        Jol.innerHTML = _html;
+        Yol.innerHTML = _whtml;
+        Jres.style.display="block";
+      }else{
+        alert('不能为空!')
+      }
+    })
+
+
+  </script>
+</body>
+</html>
+
+<!-- $   ----代表全空白名 -->
+<!-- #   ----代表需要插入几个字符 -->
